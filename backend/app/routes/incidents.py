@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.database import get_db
+from app.dependencies.auth import get_current_user, require_engineer
 from app.models.incident import Incident
 from app.schemas.incident import IncidentCreate, IncidentResponse, IncidentUpdate
 
@@ -12,6 +13,7 @@ router = APIRouter(prefix="/incidents", tags=["Incidents"])
     "/",
     response_model=IncidentResponse,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_engineer)],
 )
 def create_incident(
     incident_in: IncidentCreate,
@@ -29,12 +31,20 @@ def create_incident(
     return incident
 
 
-@router.get("/", response_model=list[IncidentResponse])
+@router.get(
+    "/",
+    response_model=list[IncidentResponse],
+    dependencies=[Depends(get_current_user)],
+)
 def list_incidents(db: Session = Depends(get_db)):
     return db.query(Incident).all()
 
 
-@router.get("/{incident_id}", response_model=IncidentResponse)
+@router.get(
+    "/{incident_id}",
+    response_model=IncidentResponse,
+    dependencies=[Depends(get_current_user)],
+)
 def get_incident(incident_id: int, db: Session = Depends(get_db)):
     incident = db.query(Incident).filter(Incident.id == incident_id).first()
     if incident is None:
@@ -42,7 +52,11 @@ def get_incident(incident_id: int, db: Session = Depends(get_db)):
     return incident
 
 
-@router.patch("/{incident_id}", response_model=IncidentResponse)
+@router.patch(
+    "/{incident_id}",
+    response_model=IncidentResponse,
+    dependencies=[Depends(require_engineer)],
+)
 def update_incident(
     incident_id: int,
     incident_in: IncidentUpdate,

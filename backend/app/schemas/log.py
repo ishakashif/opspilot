@@ -7,6 +7,9 @@ class LogCreate(BaseModel):
     message: str
     source: str
 
+class LogBulkCreate(BaseModel):
+    logs: list[LogCreate]
+
 class LogResponse(BaseModel):
     id: int
     incident_id: int
