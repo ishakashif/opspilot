@@ -15,7 +15,7 @@ from app.models.log import Log
 from app.models.user import User
 from app.services.password import hash_password
 
-# Importing the model classes registers them on Base before test tables are created.
+
 _MODELS = (Incident, Log, User)
 
 TEST_DATABASE_URL = "postgresql+psycopg://localhost/opspilot_test"

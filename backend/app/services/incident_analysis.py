@@ -10,7 +10,7 @@ from app.models.incident import Incident
 from app.models.log import Log
 from app.schemas.analysis import IncidentAnalysisResponse
 
-# Change this constant to switch the Claude model used for incident analysis.
+
 CLAUDE_MODEL = "claude-sonnet-5-5"
 MAX_OUTPUT_TOKENS = 4096
 
@@ -53,7 +53,7 @@ def analyze_incident(
             messages=[{"role": "user", "content": prompt}],
         )
     except anthropic.APIError as exc:
-        raise IncidentAnalysisError("Incident analysis service failed") from exc
+        raise IncidentAnalysisError("Incident Analysis Service Failed") from exc
 
     return _parse_analysis(message)
 
@@ -62,7 +62,7 @@ def _load_api_key() -> str:
     load_dotenv(_ENV_PATH)
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if api_key is None or not api_key.strip():
-        raise IncidentAnalysisConfigError("ANTHROPIC_API_KEY is not configured")
+        raise IncidentAnalysisConfigError("ANTHROPIC_API_KEY is Not Configured")
     return api_key
 
 
@@ -82,11 +82,11 @@ def _build_prompt(incident: Incident, logs: list[Log]) -> str:
 
 def _format_logs(logs: list[Log]) -> str:
     if not logs:
-        return "No logs were supplied for this incident."
+        return "No Logs Were Supplied for This Incident."
 
     lines = []
     for log in logs:
-        timestamp = log.timestamp.isoformat() if log.timestamp is not None else "unknown"
+        timestamp = log.timestamp.isoformat() if log.timestamp is not None else "Unknown"
         lines.append(
             f"- timestamp={timestamp} level={log.level} "
             f"source={log.source} message={log.message}"
@@ -100,7 +100,7 @@ def _parse_analysis(message) -> IncidentAnalysisResponse:
     try:
         return IncidentAnalysisResponse.model_validate(payload)
     except ValidationError as exc:
-        raise IncidentAnalysisError("Incident analysis service failed") from exc
+        raise IncidentAnalysisError("Incident Analysis Service Failed") from exc
 
 
 def _message_text(message) -> str:

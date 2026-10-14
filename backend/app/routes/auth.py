@@ -26,7 +26,7 @@ def register_user(
     if existing is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered",
+            detail="Email Already Registered",
         )
 
     user = User(
@@ -41,7 +41,7 @@ def register_user(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered",
+            detail="Email Already Registered",
         ) from None
 
     db.refresh(user)
@@ -61,7 +61,7 @@ def login_user(
     if user is None or not verify_password(user_in.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            detail="Invalid Email or Password",
         )
 
     try:
@@ -69,7 +69,7 @@ def login_user(
     except TokenConfigError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Authentication service unavailable",
+            detail="Authentication Service Unavailable",
         ) from None
 
     return TokenResponse(access_token=access_token)

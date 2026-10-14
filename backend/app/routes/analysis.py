@@ -40,10 +40,10 @@ def analyze_incident_route(
     except IncidentAnalysisConfigError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="ANTHROPIC_API_KEY is not configured",
+            detail="ANTHROPIC_API_KEY is Not Configured",
         )
     except IncidentAnalysisError:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Incident analysis service failed",
+            detail="Incident Analysis Service Failed",
         )

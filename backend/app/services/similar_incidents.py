@@ -10,7 +10,7 @@ from app.models.incident import Incident
 from app.models.log import Log
 from app.schemas.similar_incidents import SimilarIncident, SimilarIncidentsResponse
 
-# Change this constant to switch the Claude model used for similarity comparison.
+
 CLAUDE_MODEL = "claude-sonnet-5-5"
 MAX_OUTPUT_TOKENS = 4000
 
@@ -143,7 +143,6 @@ def _ground_in_candidates(
     parsed: SimilarIncidentsResponse,
     candidates: list[tuple[Incident, list[Log]]],
 ) -> SimilarIncidentsResponse:
-    """Keep Claude's ranking and qualitative fields, but take identity from the database."""
     candidates_by_id = {
         candidate.id: candidate for candidate, _logs in candidates
     }

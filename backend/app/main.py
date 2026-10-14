@@ -60,7 +60,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     )
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error"},
+        content={"detail": "Internal Server Error"},
     )
 
 app.include_router(auth_router)
@@ -68,10 +68,7 @@ app.include_router(incidents_router)
 app.include_router(logs_router)
 app.include_router(analysis_router)
 app.include_router(similar_incidents_router)
-"""
-we're telling FastAPI: when someone sends an HTTP GET request to /health,
-execure the function directly underneath it.
-"""
+
 @app.get("/health")
 def health_check():
     return{"status": "healthy"}

@@ -45,12 +45,12 @@ def get_similar_incidents(
     except SimilarIncidentsConfigError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="ANTHROPIC_API_KEY is not configured",
+            detail="ANTHROPIC_API_KEY is Not Configured",
         )
     except SimilarIncidentsError:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Similar incidents service failed",
+            detail="Similar Incidents Service Failed",
         )
 
 

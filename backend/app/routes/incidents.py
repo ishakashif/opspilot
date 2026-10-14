@@ -48,7 +48,7 @@ def list_incidents(db: Session = Depends(get_db)):
 def get_incident(incident_id: int, db: Session = Depends(get_db)):
     incident = db.query(Incident).filter(Incident.id == incident_id).first()
     if incident is None:
-        raise HTTPException(status_code=404, detail="Incident not found")
+        raise HTTPException(status_code=404, detail="Incident Not Found")
     return incident
 
 

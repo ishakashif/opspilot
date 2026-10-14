@@ -23,7 +23,7 @@ def create_log(
 ):
     incident = db.query(Incident).filter(Incident.id == incident_id).first()
     if incident is None:
-        raise HTTPException(status_code=404, detail="Incident not found")
+        raise HTTPException(status_code=404, detail="Incident Not Found")
 
     log = Log(
         incident_id=incident_id,
