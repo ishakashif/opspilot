@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import AuthWorldMap from './components/AuthWorldMap.tsx'
 import BrandMark from './BrandMark.tsx'
 import { login, register } from './auth.ts'
 
@@ -91,6 +92,7 @@ export default function AuthScreen() {
 
   return (
     <div className="auth-shell">
+      <AuthWorldMap />
       <aside className="auth-hero">
         <div className="auth-hero-brand">
           <BrandMark size={40} />

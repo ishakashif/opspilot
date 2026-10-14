@@ -2,6 +2,13 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import './App.css'
 import AuthScreen from './AuthScreen.tsx'
 import BrandMark from './BrandMark.tsx'
+import DashboardGlobe from './components/DashboardGlobe.tsx'
+import {
+  BarPanel,
+  countSegments,
+  DonutPanel,
+  serviceSegments,
+} from './components/IncidentCharts.tsx'
 import { apiRequest, logout, useAuth, type AuthUser } from './auth.ts'
 
 interface Incident {
@@ -100,6 +107,7 @@ function AppShell({
   onShowIncidents,
   onLogout,
   onNewIncident,
+  incidentCount,
   children,
 }: {
   user: AuthUser
@@ -108,6 +116,7 @@ function AppShell({
   onShowIncidents: () => void
   onLogout: () => void
   onNewIncident: () => void
+  incidentCount?: number
   children: ReactNode
 }) {
   const userInitial = user.email.trim().charAt(0).toUpperCase() || 'O'
@@ -136,13 +145,35 @@ function AppShell({
               }
             }}
           >
-            <span className="nav-glyph" aria-hidden="true" />
-            Incidents
+            <svg className="nav-icon" viewBox="0 0 16 16" aria-hidden="true">
+              <rect
+                x="1.6"
+                y="1.6"
+                width="12.8"
+                height="12.8"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+              />
+              <path
+                d="M4.2 5.2h7.6M4.2 8h7.6M4.2 10.8h4.8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="nav-label">Incidents</span>
+            {incidentCount !== undefined && (
+              <span className="nav-count">{incidentCount}</span>
+            )}
           </button>
         </nav>
         <p className="sidebar-note">Intelligent Incident Operations</p>
       </aside>
       <div className="workspace">
+        <DashboardGlobe />
         <header className="topbar">
           <div className="topbar-title">
             <p className="eyebrow">OpsPilot</p>
@@ -577,6 +608,7 @@ function Dashboard({
         onShowIncidents={leaveIncident}
         onLogout={onLogout}
         onNewIncident={() => setCreateFormOpen(true)}
+        incidentCount={loading ? undefined : incidents.length}
       >
         <article className="incident-detail">
           <header className="detail-header">
@@ -663,11 +695,12 @@ function Dashboard({
 
           {isEngineer && (
           <section
-            className="analysis-panel"
+            className={`analysis-panel${analysisLoading ? ' is-loading' : ''}`}
             aria-labelledby="incident-analysis-heading"
           >
             <div className="analysis-panel-header">
               <div>
+                <p className="ai-kicker">Claude</p>
                 <h2 id="incident-analysis-heading">AI Incident Analysis</h2>
                 {!analysis && (
                   <p className="analysis-intro">
@@ -1060,6 +1093,7 @@ function Dashboard({
       onShowIncidents={leaveIncident}
       onLogout={onLogout}
       onNewIncident={() => setCreateFormOpen(true)}
+      incidentCount={loading ? undefined : incidents.length}
     >
       <header className="page-heading">
         <div>
@@ -1193,22 +1227,76 @@ function Dashboard({
             <article className="metric-card">
               <p className="metric-label">Total incidents</p>
               <p className="metric-value">{totalIncidents}</p>
+              <p className="metric-note">Recorded in OpsPilot</p>
             </article>
-            <article className="metric-card">
+            <article className="metric-card metric-card-active">
               <p className="metric-label">Active</p>
               <p className="metric-value">{activeIncidents}</p>
+              <p className="metric-note">Not resolved</p>
             </article>
             <article className="metric-card metric-card-critical">
               <p className="metric-label">Critical</p>
               <p className="metric-value">{criticalIncidents}</p>
+              <p className="metric-note">Severity is critical</p>
             </article>
-            <article className="metric-card">
+            <article className="metric-card metric-card-investigating">
               <p className="metric-label">Investigating</p>
               <p className="metric-value">{investigatingIncidents}</p>
+              <p className="metric-note">Status is investigating</p>
             </article>
           </section>
 
+          {incidents.length > 0 && (
+            <div className="command-grid">
+              <DonutPanel
+                title="Severity"
+                note="Share of recorded incidents."
+                segments={countSegments(
+                  incidents.map((incident) => incident.severity),
+                  ['critical', 'high', 'medium', 'low'],
+                  {
+                    critical: '#f07178',
+                    high: '#f0a05a',
+                    medium: '#e3c15a',
+                    low: '#7dcea0',
+                  },
+                )}
+              />
+              <BarPanel
+                title="Status"
+                note="Current status of recorded incidents."
+                headingId="status-chart-heading"
+                segments={countSegments(
+                  incidents.map((incident) => incident.status),
+                  ['open', 'investigating', 'resolved'],
+                  {
+                    open: '#8ea2ff',
+                    investigating: '#c4b5fd',
+                    resolved: '#3dbe8c',
+                  },
+                )}
+              />
+              <BarPanel
+                title="Services"
+                note="Incidents grouped by service."
+                headingId="service-chart-heading"
+                preserveCase
+                segments={serviceSegments(
+                  incidents.map((incident) => incident.service),
+                )}
+              />
+            </div>
+          )}
+
           <section className="incidents-section" aria-label="Incident list">
+            <div className="section-heading">
+              <h2>All incidents</h2>
+              <p>
+                {incidents.length === 0
+                  ? 'Nothing recorded yet.'
+                  : `${incidents.length} recorded`}
+              </p>
+            </div>
             {incidents.length === 0 ? (
               <div className="empty-state">
                 <h3>No incidents right now</h3>
